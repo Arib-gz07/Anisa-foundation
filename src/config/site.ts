@@ -32,6 +32,8 @@ export const site = {
   giveBackImageUrl:
     'https://anisafoundation.sirv.com/Images/anisa-foundation-girls-community-heart.webp',
   blogPostsUrl: 'https://pathedits.com/blogs/tips',
+  // Public Turnstile site key (safe in frontend). Secret key stays offline until mail is wired.
+  turnstileSiteKey: '0x4AAAAAAEWUQXxCOluuoOhx',
   legalText: 'ANISA FOUNDATION is a registered 501c3 charitable organization',
 };
 

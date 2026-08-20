@@ -2,7 +2,8 @@
 import ArrowButton from './ArrowButton.astro';
 import { site } from '../../config/site';
 
-const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const turnstileSiteKey =
+  import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || site.turnstileSiteKey;
 ---
 
 <dialog class="popup-dialog" aria-modal="true">
