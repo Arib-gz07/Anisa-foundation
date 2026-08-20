@@ -1,0 +1,29 @@
+---
+import { site } from '../../config/site';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<a href="/" class:list={['logo-link', className]} aria-label="Anisa Foundation home">
+  <img
+    src={site.logoUrl}
+    alt="Anisa Foundation logo"
+    width="241"
+    height="35"
+    loading="eager"
+  />
+</a>
+
+<style>
+  .logo-link {
+    display: block;
+  }
+
+  .logo-link:hover {
+    opacity: 0.85;
+  }
+</style>

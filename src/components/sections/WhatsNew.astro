@@ -1,0 +1,107 @@
+---
+import { site, blogPosts } from '../../config/site';
+import ArrowButton from '../site/ArrowButton.astro';
+---
+
+<section class="slider-block">
+  <div class="content-width">
+    <h2>What’s new with the <b>Anisa Foundation</b></h2>
+    <div class="slider-wrap">
+      <div class="swiper home-slider">
+        <div class="swiper-wrapper">
+          {
+            blogPosts.map((post) => (
+              <div class="swiper-slide">
+                <figure>
+                  <a href={post.href} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={post.imageUrl}
+                      alt={post.imageAlt}
+                      width="455"
+                      height="264"
+                      loading="lazy"
+                    />
+                  </a>
+                </figure>
+                <div class="text">
+                  <h6 class="label">anisa foundation</h6>
+                  <h3>
+                    <a
+                      href={post.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {post.title}
+                    </a>
+                  </h3>
+                  <p>{post.excerpt}</p>
+                  <ul>
+                    <li>
+                      <img
+                        src="/images/icon-2.svg"
+                        alt=""
+                        width="17"
+                        height="18"
+                      />
+                      {post.readTime}
+                    </li>
+                    <li>
+                      <p class="date">{post.date}</p>
+                    </li>
+                    <li>
+                      <p class="name">{post.author}</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            ))
+          }
+          <div class="swiper-slide slide-btn">
+            <ArrowButton
+              href={site.blogPostsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Show all posts
+            </ArrowButton>
+          </div>
+        </div>
+        <div class="swiper-button-next home-next btn">
+          <img src="/images/icon-1.svg" alt="" width="22" height="24" />
+        </div>
+        <div class="swiper-button-prev home-prev btn">
+          <img src="/images/icon-1.svg" alt="" width="22" height="24" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import Swiper from 'swiper';
+  import { Navigation } from 'swiper/modules';
+
+  function setupHomeSlider() {
+    const slider = document.querySelector<HTMLElement>('.home-slider');
+    if (!slider || slider.dataset.swiperInit === 'true') return;
+
+    slider.dataset.swiperInit = 'true';
+
+    new Swiper('.home-slider', {
+      modules: [Navigation],
+      slidesPerView: 'auto',
+      spaceBetween: 22,
+      navigation: {
+        nextEl: '.home-next',
+        prevEl: '.home-prev',
+      },
+      breakpoints: {
+        576: { slidesPerGroup: 1 },
+        768: { slidesPerGroup: 2 },
+        1024: { slidesPerGroup: 3 },
+      },
+    });
+  }
+
+  setupHomeSlider();
+</script>

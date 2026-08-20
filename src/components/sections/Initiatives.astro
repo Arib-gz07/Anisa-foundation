@@ -1,0 +1,26 @@
+---
+import { initiatives } from '../../config/site';
+---
+
+<section class="text-img-line">
+  <div class="content-width">
+    <h2>Some of our <span>initiatives</span></h2>
+    <div class="content">
+      {
+        initiatives.map((item, index) => (
+          <div class={`item item-${index + 1}`}>
+            <div class="text">
+              <h3>
+                {item.title} <span>{item.titleAccent}</span>
+              </h3>
+              <p>{item.body}</p>
+            </div>
+            <figure data-aos="fade-up" data-aos-duration="1000">
+              <img src={item.imageUrl} alt={item.imageAlt} width="774" height="418" />
+            </figure>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

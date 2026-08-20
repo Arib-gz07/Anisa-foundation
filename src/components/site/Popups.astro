@@ -1,0 +1,383 @@
+---
+import ArrowButton from './ArrowButton.astro';
+import { site } from '../../config/site';
+
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+---
+
+<dialog class="popup-dialog" aria-modal="true">
+  <div class="popup-stage">
+    <button type="button" class="popup-close" aria-label="Close">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M13 12l5-5-1-1-5 5-5-5-1 1 5 5-5 5 1 1 5-5 5 5 1-1z"></path>
+      </svg>
+    </button>
+
+    <div class="popup-contact popup-panel" data-panel="help" id="contact">
+      <div class="title">
+        <h2 id="help-title">How you can help</h2>
+        <p>
+          If you want to be part of helping us change even more lives, here’s how
+          you can get involved.
+        </p>
+      </div>
+
+      <div class="content">
+        <div class="item item-1">
+          <figure>
+            <img src={site.pathLogoUrl} alt="Path logo" width="188" height="88" />
+          </figure>
+          <div class="text">
+            <h3>Work <span>with Path</span></h3>
+            <p>
+              The Anisa Foundation is a project from the team behind Path—professional
+              photo editing that’s good for business AND good for the world. 5% of
+              all proceeds go directly towards our charitable work.
+            </p>
+            <div class="btn-wrap">
+              <ArrowButton
+                href="https://pathedits.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Work with Path
+              </ArrowButton>
+            </div>
+          </div>
+        </div>
+
+        <div class="item item-2">
+          <figure>
+            <img
+              src={site.heartEnvelopeUrl}
+              alt="Heart-shaped envelope icon"
+              width="120"
+              height="120"
+            />
+          </figure>
+          <div class="text">
+            <h3><span>Connect</span> with us</h3>
+            <p>
+              Have an idea for how we can work together, or another reason you want
+              to get in touch? Contact us any time.
+            </p>
+            <div class="btn-wrap">
+              <ArrowButton href="#form">Contact Anisa Foundation</ArrowButton>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom">
+        <p>Thanks so much for your support.</p>
+      </div>
+    </div>
+
+    <div class="popup-contact popup-form popup-panel" data-panel="form" id="form">
+      <div class="title-form">
+        <div class="logo-wrap">
+          <img
+            src={site.heartEnvelopeUrl}
+            alt="Heart-shaped envelope icon"
+            width="120"
+            height="120"
+          />
+        </div>
+        <h2 id="form-title">Contact the Anisa Foundation</h2>
+        <p>
+          We’d love to hear from you. Connect with us by sending a message here, or you can email us at{' '}
+          <a href={`mailto:${site.email}`}>{site.email}</a>.
+        </p>
+      </div>
+
+      <form class="default-form" data-email={site.email} novalidate>
+        <div class="input-wrap">
+          <label for="contact-name">what’s your first and last name?</label>
+          <input
+            id="contact-name"
+            name="name"
+            type="text"
+            maxlength="400"
+            required
+            placeholder="Your full name"
+            autocomplete="name"
+          />
+        </div>
+        <div class="input-wrap">
+          <label for="contact-email">what’s your email?</label>
+          <input
+            id="contact-email"
+            name="email"
+            type="email"
+            maxlength="400"
+            required
+            placeholder="Your email address"
+            autocomplete="email"
+          />
+        </div>
+        <div class="input-wrap input-wrap-full">
+          <label for="contact-message">what do you want us to know?</label>
+          <textarea
+            id="contact-message"
+            name="message"
+            maxlength="2000"
+            required
+            placeholder="Write your message here"
+          ></textarea>
+        </div>
+        <div
+          class="turnstile-wrap"
+          data-sitekey={turnstileSiteKey}
+          aria-label="Security check"
+        >
+          <div class="cf-turnstile"></div>
+        </div>
+        <div class="input-wrap-submit">
+          <button type="submit" class="btn-arrow btn-blue">
+            SUBMIT
+            <img src="/images/arrow-white.svg" alt="" width="20" height="16" />
+          </button>
+        </div>
+        <p class="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+
+<script>
+  const TRANSITION_MS = 380;
+
+  declare global {
+    interface Window {
+      turnstile?: {
+        render: (
+          element: HTMLElement | string,
+          options: {
+            sitekey: string;
+            theme?: 'light' | 'dark' | 'auto';
+            callback?: (token: string) => void;
+            'expired-callback'?: () => void;
+            'error-callback'?: () => void;
+          },
+        ) => string;
+        reset: (widgetId?: string) => void;
+        remove: (widgetId?: string) => void;
+        getResponse: (widgetId?: string) => string;
+        ready: (callback: () => void) => void;
+      };
+    }
+  }
+
+  function wait(ms: number) {
+    return new Promise((resolve) => window.setTimeout(resolve, ms));
+  }
+
+  function setupPopups() {
+    const dialog = document.querySelector('.popup-dialog');
+    if (!(dialog instanceof HTMLDialogElement)) return;
+    if (dialog.dataset.ready === 'true') return;
+    dialog.dataset.ready = 'true';
+
+    const helpPanel = dialog.querySelector('[data-panel="help"]');
+    const formPanel = dialog.querySelector('[data-panel="form"]');
+    const form = dialog.querySelector('.default-form');
+    const status = dialog.querySelector('.form-status');
+    const turnstileWrap = dialog.querySelector('.turnstile-wrap');
+    const turnstileTarget = dialog.querySelector('.cf-turnstile');
+    if (!(helpPanel instanceof HTMLElement) || !(formPanel instanceof HTMLElement)) {
+      return;
+    }
+
+    let turnstileWidgetId: string | null = null;
+    let turnstileToken = '';
+
+    const sitekey =
+      turnstileWrap instanceof HTMLElement
+        ? turnstileWrap.dataset.sitekey?.trim() ?? ''
+        : '';
+
+    const resetTurnstile = () => {
+      turnstileToken = '';
+      if (turnstileWidgetId && window.turnstile) {
+        window.turnstile.reset(turnstileWidgetId);
+      }
+    };
+
+    const renderTurnstile = () => {
+      if (!sitekey || !(turnstileTarget instanceof HTMLElement) || !window.turnstile) {
+        return;
+      }
+      if (turnstileWidgetId) return;
+
+      turnstileWidgetId = window.turnstile.render(turnstileTarget, {
+        sitekey,
+        theme: 'light',
+        callback: (token) => {
+          turnstileToken = token;
+        },
+        'expired-callback': () => {
+          turnstileToken = '';
+        },
+        'error-callback': () => {
+          turnstileToken = '';
+        },
+      });
+    };
+
+    const ensureTurnstile = () => {
+      if (!sitekey) return;
+
+      if (window.turnstile) {
+        renderTurnstile();
+        return;
+      }
+
+      window.turnstile?.ready?.(renderTurnstile);
+
+      const started = Date.now();
+      const poll = window.setInterval(() => {
+        if (window.turnstile) {
+          window.clearInterval(poll);
+          renderTurnstile();
+          return;
+        }
+        if (Date.now() - started > 10000) {
+          window.clearInterval(poll);
+        }
+      }, 100);
+    };
+
+    const setPanel = (name: 'help' | 'form') => {
+      helpPanel.classList.toggle('is-active', name === 'help');
+      formPanel.classList.toggle('is-active', name === 'form');
+      dialog.setAttribute(
+        'aria-labelledby',
+        name === 'help' ? 'help-title' : 'form-title',
+      );
+      if (name === 'form') ensureTurnstile();
+    };
+
+    const open = async (name: 'help' | 'form') => {
+      setPanel(name);
+      if (!dialog.open) {
+        dialog.classList.remove('is-closing');
+        dialog.showModal();
+        dialog.classList.add('is-opening');
+        await wait(TRANSITION_MS);
+        dialog.classList.remove('is-opening');
+      }
+    };
+
+    const close = async () => {
+      if (!dialog.open || dialog.classList.contains('is-closing')) return;
+      dialog.classList.add('is-closing');
+      await wait(TRANSITION_MS);
+      dialog.close();
+      dialog.classList.remove('is-closing');
+      setPanel('help');
+    };
+
+    const switchToForm = async () => {
+      if (!dialog.open) {
+        await open('form');
+        return;
+      }
+      if (formPanel.classList.contains('is-active')) return;
+      helpPanel.classList.add('is-leaving');
+      await wait(TRANSITION_MS);
+      setPanel('form');
+      helpPanel.classList.remove('is-leaving');
+    };
+
+    document.querySelectorAll('a[href="#contact"]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        void open('help');
+      });
+    });
+
+    document.querySelectorAll('a[href="#form"]').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        void switchToForm();
+      });
+    });
+
+    dialog.querySelector('.popup-close')?.addEventListener('click', () => {
+      void close();
+    });
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) void close();
+    });
+
+    dialog.addEventListener('cancel', (event) => {
+      event.preventDefault();
+      void close();
+    });
+
+    if (form instanceof HTMLFormElement && status instanceof HTMLElement) {
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        status.textContent = '';
+        status.classList.remove('is-error', 'is-success');
+
+        const name = String(new FormData(form).get('name') ?? '').trim();
+        const email = String(new FormData(form).get('email') ?? '').trim();
+        const message = String(new FormData(form).get('message') ?? '').trim();
+        const token =
+          turnstileToken ||
+          (turnstileWidgetId && window.turnstile
+            ? window.turnstile.getResponse(turnstileWidgetId)
+            : '') ||
+          String(new FormData(form).get('cf-turnstile-response') ?? '').trim();
+
+        if (!name || !email || !message) {
+          status.textContent = 'Please fill in all of the required fields.';
+          status.classList.add('is-error');
+          return;
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          status.textContent = 'Please enter a valid email address.';
+          status.classList.add('is-error');
+          return;
+        }
+
+        if (!sitekey) {
+          status.textContent =
+            'The security check is not configured. Please email us directly.';
+          status.classList.add('is-error');
+          return;
+        }
+
+        if (!token) {
+          status.textContent = 'Please complete the security check before submitting.';
+          status.classList.add('is-error');
+          return;
+        }
+
+        const contactEmail = form.dataset.email?.trim() || 'hello@anisafoundation.org';
+        const subject = encodeURIComponent('Message from the Anisa Foundation website');
+        const body = encodeURIComponent(
+          `Name: ${name}\nEmail: ${email}\n\n${message}`,
+        );
+        window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+
+        status.textContent = 'Thank you for your message. It has been sent.';
+        status.classList.add('is-success');
+        form.reset();
+        resetTurnstile();
+      });
+    }
+
+    if (window.location.hash === '#form') void open('form');
+    if (window.location.hash === '#contact') void open('help');
+  }
+
+  setupPopups();
+</script>

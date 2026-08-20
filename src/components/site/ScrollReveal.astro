@@ -1,0 +1,38 @@
+<script>
+  const OFFSET = 120;
+
+  function setupScrollReveal() {
+    const items = [...document.querySelectorAll<HTMLElement>('[data-aos]')];
+    if (!items.length) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      items.forEach((el) => el.classList.add('aos-animate'));
+      return;
+    }
+
+    const update = () => {
+      const trigger = window.innerHeight - OFFSET;
+
+      for (const el of items) {
+        const shouldShow = el.getBoundingClientRect().top <= trigger;
+        el.classList.toggle('aos-animate', shouldShow);
+      }
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    };
+
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+  }
+
+  setupScrollReveal();
+</script>

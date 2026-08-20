@@ -1,0 +1,38 @@
+---
+import { site } from '../../config/site';
+import ArrowButton from '../site/ArrowButton.astro';
+---
+
+<section class="home-banner">
+  <div class="bg">
+    <img
+      src={site.heroImageUrl}
+      alt="Children receiving food support from Anisa Foundation"
+      width="1052"
+      height="842"
+    />
+  </div>
+  <div class="content-width">
+    <div class="content">
+      <h1>Hope (and help) where they’re needed most</h1>
+      <div class="text-wrap">
+        <p>
+          The Anisa Foundation is a registered charity based in Gaibandha,
+          Bangladesh. We help our community access life-changing—and sometimes
+          life-saving—care and support.
+        </p>
+      </div>
+      <figure>
+        <img
+          src={site.heroImageUrl}
+          alt="Children receiving food support from Anisa Foundation"
+          width="1052"
+          height="842"
+        />
+      </figure>
+      <div class="btn-wrap">
+        <ArrowButton href="#contact">See how you can help</ArrowButton>
+      </div>
+    </div>
+  </div>
+</section>

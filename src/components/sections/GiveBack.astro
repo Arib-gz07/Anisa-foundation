@@ -1,0 +1,33 @@
+---
+import { site } from '../../config/site';
+import ArrowButton from '../site/ArrowButton.astro';
+---
+
+<section class="bg-text-img">
+  <div class="content-width">
+    <div class="content">
+      <div class="text">
+        <h2>Give back</h2>
+        <h4>To Gaibandha</h4>
+        <p>
+          Want to be part of leading the transformation of Gaibandha and our
+          people? We’d love your support. Contact us to learn more about how you
+          can help most right now.
+        </p>
+        <div class="btn-wrap">
+          <ArrowButton href="#contact" class="btn-white">
+            See how you can help
+          </ArrowButton>
+        </div>
+      </div>
+      <figure>
+        <img
+          src={site.giveBackImageUrl}
+          alt="Two girls featured in an Anisa Foundation community program"
+          width="464"
+          height="635"
+        />
+      </figure>
+    </div>
+  </div>
+</section>

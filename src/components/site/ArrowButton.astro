@@ -1,0 +1,15 @@
+---
+interface Props {
+  href: string;
+  class?: string;
+  target?: string;
+  rel?: string;
+}
+
+const { href, class: className, target, rel } = Astro.props;
+---
+
+<a href={href} class:list={['btn-arrow', className]} target={target} rel={rel}>
+  <slot />
+  <img src="/images/arrow.svg" alt="" width="20" height="16" />
+</a>
