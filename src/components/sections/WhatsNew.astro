@@ -90,15 +90,15 @@ import ArrowButton from '../site/ArrowButton.astro';
     new Swiper('.home-slider', {
       modules: [Navigation],
       slidesPerView: 'auto',
-      spaceBetween: 22,
+      spaceBetween: 16,
       navigation: {
         nextEl: '.home-next',
         prevEl: '.home-prev',
       },
       breakpoints: {
-        576: { slidesPerGroup: 1 },
-        768: { slidesPerGroup: 2 },
-        1024: { slidesPerGroup: 3 },
+        576: { spaceBetween: 22, slidesPerGroup: 1 },
+        768: { spaceBetween: 22, slidesPerGroup: 2 },
+        1024: { spaceBetween: 22, slidesPerGroup: 3 },
       },
     });
   }

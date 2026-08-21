@@ -4,6 +4,15 @@ import { site } from '../../config/site';
 
 const turnstileSiteKey =
   import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || site.turnstileSiteKey;
+
+/** Prefer the Vercel API when enabled; otherwise optional Formspree URL; else mailto. */
+const contactApiEnabled =
+  import.meta.env.PUBLIC_CONTACT_API === 'true' ||
+  import.meta.env.PUBLIC_CONTACT_API === '1';
+const formspreeEndpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT?.trim() || '';
+const formEndpoint = contactApiEnabled
+  ? '/api/contact'
+  : formspreeEndpoint;
 ---
 
 <dialog class="popup-dialog" aria-modal="true">
@@ -93,7 +102,12 @@ const turnstileSiteKey =
         </p>
       </div>
 
-      <form class="default-form" data-email={site.email} novalidate>
+      <form
+        class="default-form"
+        data-email={site.email}
+        data-endpoint={formEndpoint}
+        novalidate
+      >
         <div class="input-wrap">
           <label for="contact-name">what’s your first and last name?</label>
           <input
@@ -159,16 +173,15 @@ const turnstileSiteKey =
           element: HTMLElement | string,
           options: {
             sitekey: string;
-            theme?: 'light' | 'dark' | 'auto';
+            theme?: string;
             callback?: (token: string) => void;
             'expired-callback'?: () => void;
             'error-callback'?: () => void;
           },
         ) => string;
         reset: (widgetId?: string) => void;
-        remove: (widgetId?: string) => void;
         getResponse: (widgetId?: string) => string;
-        ready: (callback: () => void) => void;
+        ready?: (callback: () => void) => void;
       };
     }
   }
@@ -177,10 +190,17 @@ const turnstileSiteKey =
     return new Promise((resolve) => window.setTimeout(resolve, ms));
   }
 
+  function openMailto(contactEmail: string, name: string, email: string, message: string) {
+    const subject = encodeURIComponent('Message from the Anisa Foundation website');
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+  }
+
   function setupPopups() {
     const dialog = document.querySelector('.popup-dialog');
-    if (!(dialog instanceof HTMLDialogElement)) return;
-    if (dialog.dataset.ready === 'true') return;
+    if (!(dialog instanceof HTMLDialogElement) || dialog.dataset.ready === 'true') {
+      return;
+    }
     dialog.dataset.ready = 'true';
 
     const helpPanel = dialog.querySelector('[data-panel="help"]');
@@ -188,14 +208,14 @@ const turnstileSiteKey =
     const form = dialog.querySelector('.default-form');
     const status = dialog.querySelector('.form-status');
     const turnstileWrap = dialog.querySelector('.turnstile-wrap');
-    const turnstileTarget = dialog.querySelector('.cf-turnstile');
+    const turnstileMount = dialog.querySelector('.cf-turnstile');
+
     if (!(helpPanel instanceof HTMLElement) || !(formPanel instanceof HTMLElement)) {
       return;
     }
 
     let turnstileWidgetId: string | null = null;
     let turnstileToken = '';
-
     const sitekey =
       turnstileWrap instanceof HTMLElement
         ? turnstileWrap.dataset.sitekey?.trim() ?? ''
@@ -209,12 +229,10 @@ const turnstileSiteKey =
     };
 
     const renderTurnstile = () => {
-      if (!sitekey || !(turnstileTarget instanceof HTMLElement) || !window.turnstile) {
+      if (!sitekey || !(turnstileMount instanceof HTMLElement) || !window.turnstile) {
         return;
       }
-      if (turnstileWidgetId) return;
-
-      turnstileWidgetId = window.turnstile.render(turnstileTarget, {
+      turnstileWidgetId ||= window.turnstile.render(turnstileMount, {
         sitekey,
         theme: 'light',
         callback: (token) => {
@@ -231,25 +249,32 @@ const turnstileSiteKey =
 
     const ensureTurnstile = () => {
       if (!sitekey) return;
-
       if (window.turnstile) {
         renderTurnstile();
         return;
       }
-
       window.turnstile?.ready?.(renderTurnstile);
-
       const started = Date.now();
-      const poll = window.setInterval(() => {
+      const timer = window.setInterval(() => {
         if (window.turnstile) {
-          window.clearInterval(poll);
+          window.clearInterval(timer);
           renderTurnstile();
           return;
         }
-        if (Date.now() - started > 10000) {
-          window.clearInterval(poll);
-        }
+        if (Date.now() - started > 10000) window.clearInterval(timer);
       }, 100);
+    };
+
+    const resetScroll = () => {
+      dialog.scrollTop = 0;
+      dialog.scrollLeft = 0;
+      helpPanel.scrollTop = 0;
+      formPanel.scrollTop = 0;
+      const stage = dialog.querySelector('.popup-stage');
+      if (stage instanceof HTMLElement) {
+        stage.scrollTop = 0;
+        stage.scrollLeft = 0;
+      }
     };
 
     const setPanel = (name: 'help' | 'form') => {
@@ -259,7 +284,13 @@ const turnstileSiteKey =
         'aria-labelledby',
         name === 'help' ? 'help-title' : 'form-title',
       );
-      if (name === 'form') ensureTurnstile();
+      resetScroll();
+      requestAnimationFrame(resetScroll);
+      if (name === 'form') {
+        ensureTurnstile();
+        window.setTimeout(resetScroll, 50);
+        window.setTimeout(resetScroll, 200);
+      }
     };
 
     const open = async (name: 'help' | 'form') => {
@@ -267,9 +298,11 @@ const turnstileSiteKey =
       if (!dialog.open) {
         dialog.classList.remove('is-closing');
         dialog.showModal();
+        resetScroll();
         dialog.classList.add('is-opening');
         await wait(TRANSITION_MS);
         dialog.classList.remove('is-opening');
+        resetScroll();
       }
     };
 
@@ -280,9 +313,10 @@ const turnstileSiteKey =
       dialog.close();
       dialog.classList.remove('is-closing');
       setPanel('help');
+      resetScroll();
     };
 
-    const switchToForm = async () => {
+    const goToForm = async () => {
       if (!dialog.open) {
         await open('form');
         return;
@@ -292,6 +326,7 @@ const turnstileSiteKey =
       await wait(TRANSITION_MS);
       setPanel('form');
       helpPanel.classList.remove('is-leaving');
+      resetScroll();
     };
 
     document.querySelectorAll('a[href="#contact"]').forEach((link) => {
@@ -304,7 +339,7 @@ const turnstileSiteKey =
     document.querySelectorAll('a[href="#form"]').forEach((link) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        void switchToForm();
+        void goToForm();
       });
     });
 
@@ -322,7 +357,7 @@ const turnstileSiteKey =
     });
 
     if (form instanceof HTMLFormElement && status instanceof HTMLElement) {
-      form.addEventListener('submit', (event) => {
+      form.addEventListener('submit', async (event) => {
         event.preventDefault();
         status.textContent = '';
         status.classList.remove('is-error', 'is-success');
@@ -363,16 +398,86 @@ const turnstileSiteKey =
         }
 
         const contactEmail = form.dataset.email?.trim() || 'hello@anisafoundation.org';
-        const subject = encodeURIComponent('Message from the Anisa Foundation website');
-        const body = encodeURIComponent(
-          `Name: ${name}\nEmail: ${email}\n\n${message}`,
-        );
-        window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+        const endpoint = form.dataset.endpoint?.trim() || '';
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
 
-        status.textContent = 'Thank you for your message. It has been sent.';
-        status.classList.add('is-success');
-        form.reset();
-        resetTurnstile();
+        const finishMailto = (note: string) => {
+          openMailto(contactEmail, name, email, message);
+          status.textContent = note;
+          status.classList.add('is-success');
+          form.reset();
+          resetTurnstile();
+        };
+
+        try {
+          if (!endpoint) {
+            finishMailto(
+              'Thanks — your email app should open so you can send the message. If it doesn’t, email us at hello@anisafoundation.org.',
+            );
+            return;
+          }
+
+          const isFormspree = endpoint.includes('formspree.io');
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(
+              isFormspree
+                ? {
+                    name,
+                    email,
+                    message,
+                    'cf-turnstile-response': token,
+                    _subject: 'Message from the Anisa Foundation website',
+                  }
+                : {
+                    name,
+                    email,
+                    message,
+                    turnstileToken: token,
+                  },
+            ),
+          });
+
+          const data = (await response.json().catch(() => ({}))) as {
+            ok?: boolean;
+            delivered?: boolean;
+            message?: string;
+            error?: string;
+          };
+
+          if (!response.ok || data.ok === false) {
+            status.textContent =
+              data.error ||
+              'Something went wrong. Please try again or email us directly.';
+            status.classList.add('is-error');
+            return;
+          }
+
+          if (endpoint === '/api/contact' && data.delivered === false) {
+            finishMailto(
+              data.message ||
+                'Security check passed. Opening your email app to finish sending.',
+            );
+            return;
+          }
+
+          status.textContent =
+            data.message || 'Thank you for your message. It has been sent.';
+          status.classList.add('is-success');
+          form.reset();
+          resetTurnstile();
+        } catch {
+          finishMailto(
+            'Thanks — your email app should open so you can send the message. If it doesn’t, email us at hello@anisafoundation.org.',
+          );
+        } finally {
+          if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+        }
       });
     }
 
