@@ -1,9 +1,12 @@
 export const site = {
   name: 'Anisa Foundation',
+  url: 'https://anisafoundation.org',
   title: 'Anisa Foundation – Making a difference where it matters most',
   description:
     'The Anisa Foundation is a registered charity based in Gaibandha, Bangladesh.',
   email: 'hello@anisafoundation.org',
+  ogImageUrl:
+    'https://anisafoundation.sirv.com/Images/anisa-foundation-children-food-support-heart.webp',
   logoUrl:
     'https://anisafoundation.sirv.com/Images/anisa-foundation-logo-horizontal.svg',
   faviconUrl:
@@ -79,7 +82,7 @@ export const blogPosts = [
   {
     title: 'Thank You for Helping Our Community: Blankets in Bangladesh',
     excerpt:
-      'You helped make a difference for 715 students in our home community of Gaibanda, Bangladesh.',
+      'You helped make a difference for 715 students in our home community of Gaibandha, Bangladesh.',
     href: 'https://pathedits.com/blogs/tips/thank-you-for-helping-our-community-blankets-in-bangladesh',
     imageUrl:
       'https://cdn.pathedits.com/Images/posts/thank-you-for-helping-our-community-blankets-in-bangladesh/Anisa-Foundation-blanket-drive.jpg',
