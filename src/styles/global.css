@@ -1117,7 +1117,7 @@ html.js [data-aos][data-aos-duration='1000'] {
 }
 
 .popup-form {
-  padding: 88px 160px;
+  padding: 88px 64px 80px;
 }
 
 .popup-form .title-form {
@@ -1157,7 +1157,10 @@ html.js [data-aos][data-aos-duration='1000'] {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 32px 0;
+  gap: 32px 24px;
+  width: 100%;
+  max-width: 615px;
+  margin-inline: auto;
 }
 
 .default-form .input-wrap {
@@ -1334,11 +1337,11 @@ footer .bottom p {
 
 @media (max-width: 1600px) {
   .popup-form {
-    padding: 70px 50px 50px;
+    padding: 80px 48px 72px;
   }
 
   .popup-form .logo-wrap {
-    margin-bottom: 20px;
+    margin-bottom: 32px;
   }
 }
 
@@ -1679,7 +1682,11 @@ footer .bottom p {
   }
 
   .popup-form {
-    padding: 64px 24px 40px;
+    padding: 64px 24px 48px;
+  }
+
+  .default-form {
+    max-width: none;
   }
 }
 
@@ -1915,7 +1922,7 @@ footer .bottom p {
   }
 
   .popup-form {
-    padding: 56px 16px 28px;
+    padding: 56px 16px 36px;
   }
 
   .default-form .input-wrap {
