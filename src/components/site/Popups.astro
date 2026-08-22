@@ -5,14 +5,24 @@ import { site } from '../../config/site';
 const turnstileSiteKey =
   import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || site.turnstileSiteKey;
 
-/** Prefer the Vercel API when enabled; otherwise optional Formspree URL; else mailto. */
+/**
+ * Delivery priority:
+ * 1) Vercel /api/contact (optional)
+ * 2) Web3Forms (recommended free path)
+ * 3) Formspree
+ * 4) mailto fallback
+ */
 const contactApiEnabled =
   import.meta.env.PUBLIC_CONTACT_API === 'true' ||
   import.meta.env.PUBLIC_CONTACT_API === '1';
+const web3formsAccessKey =
+  import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() || '';
 const formspreeEndpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT?.trim() || '';
 const formEndpoint = contactApiEnabled
   ? '/api/contact'
-  : formspreeEndpoint;
+  : web3formsAccessKey
+    ? 'https://api.web3forms.com/submit'
+    : formspreeEndpoint;
 ---
 
 <dialog class="popup-dialog" aria-modal="true">
@@ -106,6 +116,7 @@ const formEndpoint = contactApiEnabled
         class="default-form"
         data-email={site.email}
         data-endpoint={formEndpoint}
+        data-web3forms-key={web3formsAccessKey}
         novalidate
       >
         <div class="input-wrap">
@@ -399,6 +410,7 @@ const formEndpoint = contactApiEnabled
 
         const contactEmail = form.dataset.email?.trim() || 'hello@anisafoundation.org';
         const endpoint = form.dataset.endpoint?.trim() || '';
+        const web3formsKey = form.dataset.web3formsKey?.trim() || '';
         const submitButton = form.querySelector('button[type="submit"]');
         if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
 
@@ -418,41 +430,65 @@ const formEndpoint = contactApiEnabled
             return;
           }
 
+          const isWeb3Forms = endpoint.includes('web3forms.com');
           const isFormspree = endpoint.includes('formspree.io');
+
+          let payload: Record<string, string>;
+          if (isWeb3Forms) {
+            if (!web3formsKey) {
+              status.textContent =
+                'The contact form is not configured. Please email us directly.';
+              status.classList.add('is-error');
+              return;
+            }
+            payload = {
+              access_key: web3formsKey,
+              name,
+              email,
+              message,
+              subject: 'Message from the Anisa Foundation website',
+              from_name: name,
+            };
+          } else if (isFormspree) {
+            payload = {
+              name,
+              email,
+              message,
+              'cf-turnstile-response': token,
+              _subject: 'Message from the Anisa Foundation website',
+            };
+          } else {
+            payload = {
+              name,
+              email,
+              message,
+              turnstileToken: token,
+            };
+          }
+
           const response = await fetch(endpoint, {
             method: 'POST',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(
-              isFormspree
-                ? {
-                    name,
-                    email,
-                    message,
-                    'cf-turnstile-response': token,
-                    _subject: 'Message from the Anisa Foundation website',
-                  }
-                : {
-                    name,
-                    email,
-                    message,
-                    turnstileToken: token,
-                  },
-            ),
+            body: JSON.stringify(payload),
           });
 
           const data = (await response.json().catch(() => ({}))) as {
             ok?: boolean;
+            success?: boolean;
             delivered?: boolean;
             message?: string;
             error?: string;
           };
 
-          if (!response.ok || data.ok === false) {
+          const failed =
+            !response.ok || data.ok === false || data.success === false;
+          if (failed) {
             status.textContent =
               data.error ||
+              data.message ||
               'Something went wrong. Please try again or email us directly.';
             status.classList.add('is-error');
             return;
@@ -472,9 +508,9 @@ const formEndpoint = contactApiEnabled
           form.reset();
           resetTurnstile();
         } catch {
-          finishMailto(
-            'Thanks — your email app should open so you can send the message. If it doesn’t, email us at hello@anisafoundation.org.',
-          );
+          status.textContent =
+            'Something went wrong. Please try again or email us at hello@anisafoundation.org.';
+          status.classList.add('is-error');
         } finally {
           if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
         }
