@@ -4,12 +4,18 @@ import Footer from '../components/site/Footer.astro';
 import Popups from '../components/site/Popups.astro';
 import ScrollReveal from '../components/site/ScrollReveal.astro';
 import { site } from '../config/site';
-import { sirvUrl } from '../lib/images';
+import { IMAGE_WIDTHS, optimizedSrcSet, optimizedUrl } from '../lib/images';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import '../styles/global.css';
 
-const heroPreloadUrl = sirvUrl(site.heroImageUrl, 960, 82);
+const heroPreloadSizes = '(max-width: 767px) 100vw, min(900px, 55vw)';
+const heroPreloadSrcSet = optimizedSrcSet(
+  site.heroImageUrl,
+  [...IMAGE_WIDTHS.hero],
+  82,
+);
+const heroPreloadUrl = optimizedUrl(site.heroImageUrl, 720, 82);
 
 interface Props {
   title?: string;
@@ -63,10 +69,13 @@ const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN?.trim() || '';
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://anisafoundation.sirv.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.pathedits.com" crossorigin />
     <link
       rel="preload"
       as="image"
       href={heroPreloadUrl}
+      imagesrcset={heroPreloadSrcSet}
+      imagesizes={heroPreloadSizes}
       fetchpriority="high"
     />
     <link

@@ -9,19 +9,6 @@ const heroWidths = [...IMAGE_WIDTHS.hero];
 ---
 
 <section class="home-banner">
-  <div class="bg">
-    <OptimizedImage
-      src={site.heroImageUrl}
-      alt="Children receiving food support from Anisa Foundation"
-      width={1052}
-      height={842}
-      widths={heroWidths}
-      sizes={heroSizes}
-      defaultWidth={960}
-      loading="eager"
-      fetchpriority="high"
-    />
-  </div>
   <div class="content-width">
     <div class="content">
       <h1><span>Hope (and help)</span><br />where they’re needed most</h1>
@@ -32,7 +19,7 @@ const heroWidths = [...IMAGE_WIDTHS.hero];
           life-saving—care and support.
         </p>
       </div>
-      <figure>
+      <figure class="hero-media">
         <OptimizedImage
           src={site.heroImageUrl}
           alt="Children receiving food support from Anisa Foundation"
