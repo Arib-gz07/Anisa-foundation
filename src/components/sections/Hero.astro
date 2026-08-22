@@ -1,15 +1,25 @@
 ---
 import { site } from '../../config/site';
 import ArrowButton from '../site/ArrowButton.astro';
+import OptimizedImage from '../site/OptimizedImage.astro';
+import { IMAGE_WIDTHS } from '../../lib/images';
+
+const heroSizes = '(max-width: 767px) 100vw, min(900px, 55vw)';
+const heroWidths = [...IMAGE_WIDTHS.hero];
 ---
 
 <section class="home-banner">
   <div class="bg">
-    <img
+    <OptimizedImage
       src={site.heroImageUrl}
       alt="Children receiving food support from Anisa Foundation"
-      width="1052"
-      height="842"
+      width={1052}
+      height={842}
+      widths={heroWidths}
+      sizes={heroSizes}
+      defaultWidth={960}
+      loading="eager"
+      fetchpriority="high"
     />
   </div>
   <div class="content-width">
@@ -23,11 +33,16 @@ import ArrowButton from '../site/ArrowButton.astro';
         </p>
       </div>
       <figure>
-        <img
+        <OptimizedImage
           src={site.heroImageUrl}
           alt="Children receiving food support from Anisa Foundation"
-          width="1052"
-          height="842"
+          width={1052}
+          height={842}
+          widths={heroWidths}
+          sizes={heroSizes}
+          defaultWidth={720}
+          loading="eager"
+          fetchpriority="high"
         />
       </figure>
       <div class="btn-wrap">

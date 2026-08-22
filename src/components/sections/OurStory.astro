@@ -1,16 +1,22 @@
 ---
 import { site } from '../../config/site';
+import OptimizedImage from '../site/OptimizedImage.astro';
+import { IMAGE_WIDTHS } from '../../lib/images';
 ---
 
 <section class="story" id="story">
   <div class="content-width">
     <div class="content">
       <figure data-aos="fade-up" data-aos-duration="1000">
-        <img
+        <OptimizedImage
           src={site.ourStoryImageUrl}
           alt="Woman representing the community supported by Anisa Foundation"
-          width="590"
-          height="590"
+          width={590}
+          height={590}
+          widths={[...IMAGE_WIDTHS.half]}
+          sizes="(max-width: 991px) 100vw, min(590px, 47vw)"
+          defaultWidth={800}
+          loading="lazy"
         />
       </figure>
       <div class="text">

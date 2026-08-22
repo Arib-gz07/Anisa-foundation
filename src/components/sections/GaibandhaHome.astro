@@ -1,5 +1,7 @@
 ---
 import { site } from '../../config/site';
+import OptimizedImage from '../site/OptimizedImage.astro';
+import { IMAGE_WIDTHS } from '../../lib/images';
 ---
 
 <section class="map-section">
@@ -9,6 +11,8 @@ import { site } from '../../config/site';
       alt="Map showing Gaibandha location in Bangladesh"
       width="1436"
       height="1043"
+      loading="lazy"
+      decoding="async"
     />
   </div>
   <div class="content-width">
@@ -19,11 +23,15 @@ import { site } from '../../config/site';
     <div class="content">
       <div class="left">
         <figure data-aos="fade-up" data-aos-duration="1000">
-          <img
+          <OptimizedImage
             src={site.gaibandhaChildrenUrl}
             alt="Children receiving Eid food packages from Anisa Foundation"
-            width="1256"
-            height="679"
+            width={1256}
+            height={679}
+            widths={[...IMAGE_WIDTHS.half]}
+            sizes="(max-width: 991px) 100vw, min(620px, 48vw)"
+            defaultWidth={800}
+            loading="lazy"
           />
         </figure>
       </div>
@@ -35,6 +43,8 @@ import { site } from '../../config/site';
               alt=""
               width="80"
               height="62"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <h6>
@@ -48,11 +58,15 @@ import { site } from '../../config/site';
           </p>
         </div>
         <figure data-aos="fade-up" data-aos-duration="1000">
-          <img
+          <OptimizedImage
             src={site.gaibandhaGirlsUrl}
             alt="Two girls supported by Anisa Foundation"
-            width="386"
-            height="370"
+            width={386}
+            height={370}
+            widths={[...IMAGE_WIDTHS.card]}
+            sizes="(max-width: 991px) 90vw, min(400px, 32vw)"
+            defaultWidth={480}
+            loading="lazy"
           />
         </figure>
       </div>

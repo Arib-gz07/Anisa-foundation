@@ -1,6 +1,8 @@
 ---
 import { site, blogPosts } from '../../config/site';
 import ArrowButton from '../site/ArrowButton.astro';
+import OptimizedImage from '../site/OptimizedImage.astro';
+import { IMAGE_WIDTHS } from '../../lib/images';
 ---
 
 <section class="slider-block">
@@ -14,11 +16,14 @@ import ArrowButton from '../site/ArrowButton.astro';
               <div class="swiper-slide">
                 <figure>
                   <a href={post.href} target="_blank" rel="noopener noreferrer">
-                    <img
+                    <OptimizedImage
                       src={post.imageUrl}
                       alt={post.imageAlt}
-                      width="455"
-                      height="264"
+                      width={455}
+                      height={264}
+                      widths={[...IMAGE_WIDTHS.blog]}
+                      sizes="(max-width: 575px) 90vw, 455px"
+                      defaultWidth={480}
                       loading="lazy"
                     />
                   </a>
@@ -42,6 +47,8 @@ import ArrowButton from '../site/ArrowButton.astro';
                         alt=""
                         width="17"
                         height="18"
+                        loading="lazy"
+                        decoding="async"
                       />
                       {post.readTime}
                     </li>
@@ -67,10 +74,10 @@ import ArrowButton from '../site/ArrowButton.astro';
           </div>
         </div>
         <div class="swiper-button-next home-next btn">
-          <img src="/images/icon-1.svg" alt="" width="22" height="24" />
+          <img src="/images/icon-1.svg" alt="" width="22" height="24" loading="lazy" decoding="async" />
         </div>
         <div class="swiper-button-prev home-prev btn">
-          <img src="/images/icon-1.svg" alt="" width="22" height="24" />
+          <img src="/images/icon-1.svg" alt="" width="22" height="24" loading="lazy" decoding="async" />
         </div>
       </div>
     </div>

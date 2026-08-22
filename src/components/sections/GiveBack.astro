@@ -1,6 +1,8 @@
 ---
 import { site } from '../../config/site';
 import ArrowButton from '../site/ArrowButton.astro';
+import OptimizedImage from '../site/OptimizedImage.astro';
+import { IMAGE_WIDTHS } from '../../lib/images';
 ---
 
 <section class="bg-text-img">
@@ -21,11 +23,15 @@ import ArrowButton from '../site/ArrowButton.astro';
         </div>
       </div>
       <figure>
-        <img
+        <OptimizedImage
           src={site.giveBackImageUrl}
           alt="Two girls featured in an Anisa Foundation community program"
-          width="464"
-          height="635"
+          width={464}
+          height={635}
+          widths={[...IMAGE_WIDTHS.portrait]}
+          sizes="(max-width: 991px) min(360px, 70vw), min(464px, 36vw)"
+          defaultWidth={640}
+          loading="lazy"
         />
       </figure>
     </div>

@@ -1,5 +1,7 @@
 ---
 import { site } from '../../config/site';
+import OptimizedImage from '../site/OptimizedImage.astro';
+import { IMAGE_WIDTHS } from '../../lib/images';
 ---
 
 <section class="text-img" id="work">
@@ -9,6 +11,8 @@ import { site } from '../../config/site';
       alt="Decorative heart graphic"
       width="656"
       height="493"
+      loading="lazy"
+      decoding="async"
     />
   </div>
   <div class="content-width">
@@ -26,12 +30,16 @@ import { site } from '../../config/site';
         </p>
       </div>
       <figure data-aos="fade-up" data-aos-duration="1000">
-        <img
+        <OptimizedImage
           class="img"
           src={site.whyWeExistImageUrl}
           alt="Mothers and children participating in an Anisa Foundation community program"
-          width="1256"
-          height="679"
+          width={1256}
+          height={679}
+          widths={[...IMAGE_WIDTHS.wide]}
+          sizes="(max-width: 991px) 100vw, min(1100px, 72vw)"
+          defaultWidth={1200}
+          loading="lazy"
         />
         <img
           class="after"
@@ -39,6 +47,8 @@ import { site } from '../../config/site';
           alt="Decorative heart graphic"
           width="656"
           height="493"
+          loading="lazy"
+          decoding="async"
         />
       </figure>
     </div>

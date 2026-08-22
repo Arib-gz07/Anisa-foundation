@@ -1,5 +1,7 @@
 ---
 import { initiatives } from '../../config/site';
+import OptimizedImage from '../site/OptimizedImage.astro';
+import { IMAGE_WIDTHS } from '../../lib/images';
 ---
 
 <section class="text-img-line">
@@ -16,7 +18,16 @@ import { initiatives } from '../../config/site';
               <p>{item.body}</p>
             </div>
             <figure data-aos="fade-up" data-aos-duration="1000">
-              <img src={item.imageUrl} alt={item.imageAlt} width="774" height="418" />
+              <OptimizedImage
+                src={item.imageUrl}
+                alt={item.imageAlt}
+                width={774}
+                height={418}
+                widths={[...IMAGE_WIDTHS.half]}
+                sizes="(max-width: 991px) 100vw, min(620px, 48vw)"
+                defaultWidth={800}
+                loading="lazy"
+              />
             </figure>
           </div>
         ))
