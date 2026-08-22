@@ -98,6 +98,9 @@ const formEndpoint = contactApiEnabled
     </div>
 
     <div class="popup-contact popup-form popup-panel" data-panel="form" id="form">
+      <button type="button" class="popup-form-back" aria-label="Back" hidden>
+        <img src="/images/arrow.svg" alt="" width="20" height="16" />
+      </button>
       <div class="title-form">
         <div class="logo-wrap">
           <img
@@ -231,6 +234,8 @@ const formEndpoint = contactApiEnabled
 
     let turnstileWidgetId: string | null = null;
     let turnstileToken = '';
+    let formBackEnabled = false;
+    const formBackButton = dialog.querySelector('.popup-form-back');
     const sitekey =
       turnstileWrap instanceof HTMLElement
         ? turnstileWrap.dataset.sitekey?.trim() ?? ''
@@ -292,6 +297,12 @@ const formEndpoint = contactApiEnabled
       }
     };
 
+    const updateFormBackButton = () => {
+      if (formBackButton instanceof HTMLButtonElement) {
+        formBackButton.hidden = !formBackEnabled;
+      }
+    };
+
     const setPanel = (name: 'help' | 'form') => {
       helpPanel.classList.toggle('is-active', name === 'help');
       formPanel.classList.toggle('is-active', name === 'form');
@@ -309,6 +320,10 @@ const formEndpoint = contactApiEnabled
     };
 
     const open = async (name: 'help' | 'form') => {
+      if (name === 'form' || name === 'help') {
+        formBackEnabled = false;
+        updateFormBackButton();
+      }
       setPanel(name);
       if (!dialog.open) {
         dialog.classList.remove('is-closing');
@@ -329,18 +344,78 @@ const formEndpoint = contactApiEnabled
       dialog.classList.remove('is-closing');
       setPanel('help');
       resetScroll();
+      formBackEnabled = false;
+      updateFormBackButton();
+      clearFormHash();
     };
 
-    const goToForm = async () => {
+    const resetFormState = () => {
+      if (form instanceof HTMLFormElement) {
+        form.reset();
+        form.classList.remove('is-submitted');
+      }
+      if (status instanceof HTMLElement) {
+        status.textContent = '';
+        status.classList.remove('is-error', 'is-success');
+      }
+      resetTurnstile();
+      const submitButton = form?.querySelector('button[type="submit"]');
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = false;
+      }
+    };
+
+    const clearFormHash = () => {
+      if (window.location.hash === '#form' || window.location.hash === '#contact') {
+        history.replaceState(
+          null,
+          '',
+          `${window.location.pathname}${window.location.search}`,
+        );
+      }
+    };
+
+    const finishSuccess = async (message: string) => {
+      if (!(form instanceof HTMLFormElement) || !(status instanceof HTMLElement)) return;
+
+      const submitButton = form.querySelector('button[type="submit"]');
+      form.classList.add('is-submitted');
+      status.textContent = message;
+      status.classList.add('is-success');
+      clearFormHash();
+
+      if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
+
+      await wait(1600);
+      await close();
+      resetFormState();
+    };
+
+    const goToForm = async (fromHelp = false) => {
       if (!dialog.open) {
+        formBackEnabled = false;
+        updateFormBackButton();
         await open('form');
         return;
       }
       if (formPanel.classList.contains('is-active')) return;
+      formBackEnabled = fromHelp;
+      updateFormBackButton();
       helpPanel.classList.add('is-leaving');
       await wait(TRANSITION_MS);
       setPanel('form');
       helpPanel.classList.remove('is-leaving');
+      resetScroll();
+    };
+
+    const goBackToHelp = async () => {
+      if (!formBackEnabled || !formPanel.classList.contains('is-active')) return;
+      formPanel.classList.add('is-leaving');
+      await wait(TRANSITION_MS);
+      formBackEnabled = false;
+      updateFormBackButton();
+      setPanel('help');
+      formPanel.classList.remove('is-leaving');
       resetScroll();
     };
 
@@ -354,8 +429,14 @@ const formEndpoint = contactApiEnabled
     document.querySelectorAll('a[href="#form"]').forEach((link) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        void goToForm();
+        const fromHelp =
+          dialog.open && helpPanel.classList.contains('is-active');
+        void goToForm(fromHelp);
       });
+    });
+
+    formBackButton?.addEventListener('click', () => {
+      void goBackToHelp();
     });
 
     dialog.querySelector('.popup-close')?.addEventListener('click', () => {
@@ -418,17 +499,18 @@ const formEndpoint = contactApiEnabled
         const submitButton = form.querySelector('button[type="submit"]');
         if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true;
 
-        const finishMailto = (note: string) => {
+        const enableSubmit = () => {
+          if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+        };
+
+        const finishMailto = async (note: string) => {
           openMailto(contactEmail, name, email, message);
-          status.textContent = note;
-          status.classList.add('is-success');
-          form.reset();
-          resetTurnstile();
+          await finishSuccess(note);
         };
 
         try {
           if (!endpoint) {
-            finishMailto(
+            await finishMailto(
               'Thanks — your email app should open so you can send the message. If it doesn’t, email us at hello@anisafoundation.org.',
             );
             return;
@@ -443,6 +525,7 @@ const formEndpoint = contactApiEnabled
               status.textContent =
                 'The contact form is not configured. Please email us directly.';
               status.classList.add('is-error');
+              enableSubmit();
               return;
             }
             payload = {
@@ -495,28 +578,26 @@ const formEndpoint = contactApiEnabled
               data.message ||
               'Something went wrong. Please try again or email us directly.';
             status.classList.add('is-error');
+            enableSubmit();
             return;
           }
 
           if (endpoint === '/api/contact' && data.delivered === false) {
-            finishMailto(
+            await finishMailto(
               data.message ||
                 'Security check passed. Opening your email app to finish sending.',
             );
             return;
           }
 
-          status.textContent =
-            data.message || 'Thank you for your message. It has been sent.';
-          status.classList.add('is-success');
-          form.reset();
-          resetTurnstile();
+          await finishSuccess(
+            data.message || 'Thank you for your message. It has been sent.',
+          );
         } catch {
           status.textContent =
             'Something went wrong. Please try again or email us at hello@anisafoundation.org.';
           status.classList.add('is-error');
-        } finally {
-          if (submitButton instanceof HTMLButtonElement) submitButton.disabled = false;
+          enableSubmit();
         }
       });
     }
