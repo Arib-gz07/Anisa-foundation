@@ -192,21 +192,15 @@ h6 {
   padding: 295px 0 250px;
 }
 
-.home-banner .hero-media {
+.home-banner .bg img {
   position: absolute;
   top: 63px;
   right: 50%;
-  margin: 0;
-  transform: translate(101%, 0);
-  z-index: 1;
-}
-
-.home-banner .hero-media img {
-  display: block;
   max-width: none;
   max-height: 100%;
   width: auto;
   height: auto;
+  transform: translate(101%, 0);
 }
 
 .home-banner h1 {
@@ -224,8 +218,8 @@ h6 {
   margin-bottom: 48px;
 }
 
-.home-banner .content {
-  position: relative;
+.home-banner figure {
+  display: none;
 }
 
 /* Why we exist */
@@ -1419,14 +1413,9 @@ footer .bottom p {
     --page-gutter: 20px;
   }
 
-  .home-banner .hero-media {
+  .home-banner .bg img {
     width: 500px;
     top: 200px;
-  }
-
-  .home-banner .hero-media img {
-    width: 100%;
-    height: auto;
   }
 
   .home-banner .content {
@@ -1528,7 +1517,7 @@ footer .bottom p {
     --page-gutter: 20px;
   }
 
-  .home-banner .hero-media {
+  .home-banner .bg img {
     width: 400px;
     transform: translate(115%, 0);
   }
@@ -1772,18 +1761,18 @@ footer .bottom p {
     padding: 100px 0 56px;
   }
 
-  .home-banner .hero-media {
-    position: relative;
-    top: auto;
-    right: auto;
-    transform: none;
-    width: auto;
+  .home-banner .bg img {
+    display: none;
+  }
+
+  .home-banner figure {
+    display: block;
     margin: 0 0 24px;
     max-width: 100%;
     padding: 0;
   }
 
-  .home-banner .hero-media img {
+  .home-banner figure img {
     width: 100%;
     height: auto;
   }
@@ -1992,6 +1981,14 @@ footer .bottom p {
 @media (max-width: 575px) {
   :root {
     --page-gutter: 18px;
+  }
+
+  .home-banner .bg img {
+    display: none;
+  }
+
+  .home-banner figure {
+    display: block;
   }
 
   .bg-text-img .content {
