@@ -190,6 +190,12 @@ h6 {
 .home-banner {
   position: relative;
   padding: 295px 0 250px;
+  overflow: visible;
+}
+
+.home-banner .bg {
+  overflow: visible;
+  z-index: 2;
 }
 
 .home-banner .bg img {
@@ -197,7 +203,7 @@ h6 {
   top: 63px;
   right: 50%;
   max-width: none;
-  max-height: 100%;
+  max-height: none;
   width: auto;
   height: auto;
   transform: translate(101%, 0);
@@ -1533,7 +1539,6 @@ footer .bottom p {
   /* Stack Why we exist — match live site (gap between card and image) */
   .text-img {
     padding: 50px 0;
-    overflow: hidden;
   }
 
   .text-img .text {

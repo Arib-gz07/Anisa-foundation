@@ -4,7 +4,7 @@ import ArrowButton from '../site/ArrowButton.astro';
 import OptimizedImage from '../site/OptimizedImage.astro';
 import { IMAGE_WIDTHS } from '../../lib/images';
 
-const heroSizes = '(max-width: 767px) 100vw, min(900px, 55vw)';
+const heroSizes = '(max-width: 767px) 100vw, 1052px';
 const heroWidths = [...IMAGE_WIDTHS.hero];
 ---
 
@@ -17,7 +17,7 @@ const heroWidths = [...IMAGE_WIDTHS.hero];
       height={842}
       widths={heroWidths}
       sizes={heroSizes}
-      defaultWidth={960}
+      defaultWidth={1052}
       loading="eager"
       fetchpriority="high"
     />

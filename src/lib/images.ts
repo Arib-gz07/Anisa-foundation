@@ -89,7 +89,7 @@ export function optimizedSrcSet(
 
 /** Display-aware candidate widths (covers 1x–2x DPR). */
 export const IMAGE_WIDTHS = {
-  hero: [480, 720, 960, 1200],
+  hero: [480, 720, 960, 1052, 1200],
   wide: [640, 960, 1200, 1400],
   half: [400, 640, 800, 1000],
   card: [360, 480, 640, 800],
