@@ -27,14 +27,6 @@ const formEndpoint = contactApiEnabled
 
 <dialog class="popup-dialog" aria-modal="true">
   <div class="popup-stage">
-    <button type="button" class="popup-close" aria-label="Close">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <path
-          fill="currentColor"
-          d="M13 12l5-5-1-1-5 5-5-5-1 1 5 5-5 5 1 1 5-5 5 5 1-1z"></path>
-      </svg>
-    </button>
-
     <div class="popup-contact popup-panel" data-panel="help" id="contact">
       <div class="title">
         <h2 id="help-title">How you can help</h2>
@@ -176,13 +168,21 @@ const formEndpoint = contactApiEnabled
         <p class="form-status" role="status" aria-live="polite"></p>
       </form>
     </div>
+
+    <button type="button" class="popup-close" aria-label="Close">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M13 12l5-5-1-1-5 5-5-5-1 1 5 5-5 5 1 1 5-5 5 5 1-1z"></path>
+      </svg>
+    </button>
   </div>
 </dialog>
 
-<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
-
 <script>
   const TRANSITION_MS = 380;
+  const TURNSTILE_SCRIPT =
+    'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
   declare global {
     interface Window {
@@ -267,22 +267,48 @@ const formEndpoint = contactApiEnabled
       });
     };
 
-    const ensureTurnstile = () => {
+    const loadTurnstileScript = () =>
+      new Promise<void>((resolve) => {
+        if (window.turnstile) {
+          resolve();
+          return;
+        }
+
+        const existing = document.querySelector<HTMLScriptElement>(
+          `script[src="${TURNSTILE_SCRIPT}"]`,
+        );
+        if (existing) {
+          if (existing.dataset.loaded === 'true') {
+            resolve();
+            return;
+          }
+          existing.addEventListener('load', () => resolve(), { once: true });
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = TURNSTILE_SCRIPT;
+        script.async = true;
+        script.defer = true;
+        script.addEventListener(
+          'load',
+          () => {
+            script.dataset.loaded = 'true';
+            resolve();
+          },
+          { once: true },
+        );
+        document.head.appendChild(script);
+      });
+
+    const ensureTurnstile = async () => {
       if (!sitekey) return;
+      await loadTurnstileScript();
       if (window.turnstile) {
         renderTurnstile();
         return;
       }
       window.turnstile?.ready?.(renderTurnstile);
-      const started = Date.now();
-      const timer = window.setInterval(() => {
-        if (window.turnstile) {
-          window.clearInterval(timer);
-          renderTurnstile();
-          return;
-        }
-        if (Date.now() - started > 10000) window.clearInterval(timer);
-      }, 100);
     };
 
     const resetScroll = () => {
@@ -328,6 +354,17 @@ const formEndpoint = contactApiEnabled
       if (!dialog.open) {
         dialog.classList.remove('is-closing');
         dialog.showModal();
+        window.setTimeout(() => {
+          const stage = dialog.querySelector('.popup-stage');
+          const closeButton = dialog.querySelector('.popup-close');
+          if (stage instanceof HTMLElement) {
+            stage.setAttribute('tabindex', '-1');
+            stage.focus({ preventScroll: true });
+          }
+          if (closeButton instanceof HTMLButtonElement) {
+            closeButton.blur();
+          }
+        }, 0);
         resetScroll();
         dialog.classList.add('is-opening');
         await wait(TRANSITION_MS);

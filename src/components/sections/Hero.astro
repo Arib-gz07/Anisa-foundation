@@ -1,27 +1,16 @@
 ---
 import { site } from '../../config/site';
 import ArrowButton from '../site/ArrowButton.astro';
-import OptimizedImage from '../site/OptimizedImage.astro';
-import { IMAGE_WIDTHS } from '../../lib/images';
+import { IMAGE_WIDTHS, optimizedSrcSet, optimizedUrl } from '../../lib/images';
 
-const heroSizes = '(max-width: 767px) 100vw, min(900px, 55vw)';
 const heroWidths = [...IMAGE_WIDTHS.hero];
+const heroSizesDesktop = 'min(900px, 55vw)';
+const heroSizesMobile = '100vw';
+const heroSrcSet = optimizedSrcSet(site.heroImageUrl, heroWidths, 82);
+const heroMobileSrc = optimizedUrl(site.heroImageUrl, 480, 82);
 ---
 
 <section class="home-banner">
-  <div class="bg">
-    <OptimizedImage
-      src={site.heroImageUrl}
-      alt="Children receiving food support from Anisa Foundation"
-      width={1052}
-      height={842}
-      widths={heroWidths}
-      sizes={heroSizes}
-      defaultWidth={960}
-      loading="eager"
-      fetchpriority="high"
-    />
-  </div>
   <div class="content-width">
     <div class="content">
       <h1><span>Hope (and help)</span><br />where they’re needed most</h1>
@@ -32,19 +21,26 @@ const heroWidths = [...IMAGE_WIDTHS.hero];
           life-saving—care and support.
         </p>
       </div>
-      <figure>
-        <OptimizedImage
-          src={site.heroImageUrl}
-          alt="Children receiving food support from Anisa Foundation"
-          width={1052}
-          height={842}
-          widths={heroWidths}
-          sizes={heroSizes}
-          defaultWidth={720}
-          loading="eager"
-          fetchpriority="high"
-        />
-      </figure>
+      <div class="hero-image">
+        <picture>
+          <source
+            media="(min-width: 768px)"
+            srcset={heroSrcSet}
+            sizes={heroSizesDesktop}
+          />
+          <img
+            src={heroMobileSrc}
+            srcset={heroSrcSet}
+            sizes={heroSizesMobile}
+            alt="Children receiving food support from Anisa Foundation"
+            width={1052}
+            height={842}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </picture>
+      </div>
       <div class="btn-wrap">
         <ArrowButton href="#contact">See how you can help</ArrowButton>
       </div>
