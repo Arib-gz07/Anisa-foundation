@@ -37,7 +37,7 @@ export const site = {
   blogPostsUrl: 'https://pathedits.com/blogs/tips',
   // Public Turnstile site key (safe in frontend). Secret key stays offline until mail is wired.
   turnstileSiteKey: '0x4AAAAAAEWUQXxCOluuoOhx',
-  legalText: 'ANISA FOUNDATION is a registered 501c3 charitable organization',
+  legalText: 'ANISA FOUNDATION is a registered S-15240/2026 charitable organization',
 };
 
 export const initiatives = [
