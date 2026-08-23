@@ -88,7 +88,6 @@ p {
   width: 100%;
   max-width: var(--content-width);
   margin-inline: auto;
-  padding-inline: var(--page-gutter);
 }
 
 h1 {
@@ -186,7 +185,7 @@ h6 {
   left: 2px;
 }
 
-/* Hero */
+/* Hero — keep separate from Why we exist decorative hearts (.decorative-heart) */
 .home-banner {
   position: relative;
   padding: 295px 0 250px;
@@ -202,10 +201,10 @@ h6 {
   position: absolute;
   top: 63px;
   right: 50%;
+  width: 1052px;
+  height: auto;
   max-width: none;
   max-height: none;
-  width: auto;
-  height: auto;
   transform: translate(101%, 0);
 }
 
@@ -233,13 +232,20 @@ h6 {
   position: relative;
   padding: 115px 0 250px;
   z-index: 3;
+  --why-heart-size: 656px;
 }
 
 .text-img .bg {
   top: -78px;
+  overflow: visible;
 }
 
-.text-img .bg img {
+.text-img .decorative-heart {
+  width: var(--why-heart-size);
+  height: auto;
+}
+
+.text-img .decorative-heart--upper {
   position: absolute;
   top: 0;
   left: 50%;
@@ -285,13 +291,10 @@ h6 {
   border-radius: 20px;
 }
 
-.text-img .content figure .after {
+.text-img .decorative-heart--lower {
   position: absolute;
   bottom: -295px;
   right: -16px;
-  width: auto;
-  max-width: 50%;
-  height: auto;
 }
 
 /* Scroll reveal (AOS fade-up) */
@@ -386,8 +389,7 @@ html.js [data-aos][data-aos-duration='1000'] {
 
 .text-img-line figure img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
   border-radius: 20px;
   display: block;
 }
@@ -659,16 +661,12 @@ html.js [data-aos][data-aos-duration='1000'] {
   bottom: 0;
   right: 0;
   max-height: 100%;
-  max-width: 40%;
   pointer-events: none;
 }
 
 .bg-text-img figure img {
   max-height: 100%;
-  width: 100%;
   height: auto;
-  object-fit: contain;
-  object-position: bottom right;
 }
 
 .bg-text-img .btn-wrap {
@@ -1443,9 +1441,7 @@ footer .bottom p {
     top: 60px;
   }
 
-  .text-img .content figure .after {
-    width: min(220px, 32%);
-    height: auto;
+  .text-img .decorative-heart--lower {
     bottom: -72px;
     right: -8px;
   }
@@ -1482,8 +1478,8 @@ footer .bottom p {
     width: min(420px, 58%);
   }
 
-  .bg-text-img figure {
-    max-width: 38%;
+  .bg-text-img figure img {
+    width: 300px;
   }
 
   .slider-block .btn {
@@ -1539,6 +1535,7 @@ footer .bottom p {
   /* Stack Why we exist — match live site (gap between card and image) */
   .text-img {
     padding: 50px 0;
+    --why-heart-size: 420px;
   }
 
   .text-img .text {
@@ -1557,16 +1554,13 @@ footer .bottom p {
     padding-top: 0;
   }
 
-  .text-img .content figure .after {
-    width: min(190px, 34%);
-    height: auto;
+  .text-img .decorative-heart--lower {
     bottom: -72px;
     right: -4px;
   }
 
-  .text-img .bg img {
+  .text-img .decorative-heart--upper {
     transform: translate(-120%, 0);
-    max-width: 420px;
   }
 
   .text-img-line {
@@ -1685,13 +1679,12 @@ footer .bottom p {
     position: absolute;
     right: 0;
     bottom: 0;
-    max-width: min(200px, 36%);
     margin: 0;
     pointer-events: none;
   }
 
   .bg-text-img figure img {
-    width: 100%;
+    width: 150px;
     max-height: none;
   }
 
@@ -1805,6 +1798,7 @@ footer .bottom p {
 
   .text-img {
     padding: 40px 0 48px;
+    --why-heart-size: 280px;
   }
 
   .text-img .text {
@@ -1821,15 +1815,12 @@ footer .bottom p {
     padding-top: 0;
   }
 
-  .text-img .content figure .after {
-    width: min(120px, 32vw);
-    height: auto;
+  .text-img .decorative-heart--lower {
     bottom: -16px;
     right: 8px;
   }
 
-  .text-img .bg img {
-    max-width: 280px;
+  .text-img .decorative-heart--upper {
     transform: translate(-110%, 10%);
   }
 
@@ -1878,7 +1869,10 @@ footer .bottom p {
     position: absolute;
     right: 0;
     bottom: 0;
-    max-width: min(150px, 40%);
+  }
+
+  .bg-text-img figure img {
+    width: 120px;
   }
 
   .slider-block {
@@ -1990,6 +1984,10 @@ footer .bottom p {
     --page-gutter: 18px;
   }
 
+  .content-width {
+    padding-inline: 10px;
+  }
+
   .home-banner .bg img {
     display: none;
   }
@@ -2001,7 +1999,6 @@ footer .bottom p {
   .bg-text-img .content {
     padding: 24px 16px;
     min-height: 0;
-    flex-direction: column;
   }
 
   .bg-text-img .text {
@@ -2009,11 +2006,9 @@ footer .bottom p {
   }
 
   .bg-text-img figure {
-    position: relative;
-    right: auto;
+    top: 0;
+    right: -22px;
     bottom: auto;
-    max-width: min(140px, 50%);
-    margin: 8px 0 0 auto;
   }
 
   .slider-block .swiper-slide {
@@ -2034,8 +2029,11 @@ footer .bottom p {
     font-size: 10px;
   }
 
-  .text-img .content figure .after {
-    width: min(150px, 30vw);
+  .text-img {
+    --why-heart-size: 150px;
+  }
+
+  .text-img .decorative-heart--lower {
     bottom: -50px;
     right: 4px;
   }
