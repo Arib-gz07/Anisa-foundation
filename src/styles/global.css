@@ -1530,22 +1530,26 @@ footer .bottom p {
     width: min(420px, 100%);
   }
 
-  /* Keep layered overlap — heart anchors under photo, no empty lavender void */
+  /* Stack Why we exist — match live site (gap between card and image) */
   .text-img {
-    padding: 48px 0 40px;
+    padding: 50px 0;
+    overflow: hidden;
   }
 
   .text-img .text {
-    width: min(340px, 52%);
+    width: 100%;
+    max-width: 100%;
     padding: 28px 24px;
-    margin-bottom: 0;
+    margin-bottom: 15px;
   }
 
   .text-img .content figure {
-    width: calc(100% - 80px);
-    left: 80px;
-    top: 36px;
-    position: absolute;
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    top: 0;
+    position: relative;
+    padding-top: 0;
   }
 
   .text-img .content figure .after {
@@ -1561,8 +1565,8 @@ footer .bottom p {
   }
 
   .text-img-line {
-    margin-top: -28px;
-    padding: 40px 0 72px;
+    margin-top: 0;
+    padding: 80px 0;
   }
 
   .text-img-line h2 {
@@ -1574,7 +1578,7 @@ footer .bottom p {
   .text-img-line .item:nth-child(even) {
     flex-direction: column;
     justify-content: flex-start;
-    gap: 16px;
+    gap: 15px;
   }
 
   .text-img-line .item figure {
@@ -1794,15 +1798,13 @@ footer .bottom p {
     max-width: 100%;
   }
 
-  /* Stack Why we exist on phones; keep a small decorative overlap */
   .text-img {
     padding: 40px 0 48px;
-    overflow: hidden;
   }
 
   .text-img .text {
     width: 100%;
-    margin-bottom: -40px;
+    margin-bottom: 15px;
     padding: 28px 24px;
   }
 
@@ -1811,7 +1813,7 @@ footer .bottom p {
     top: 0;
     left: 0;
     position: relative;
-    padding-top: 40px;
+    padding-top: 0;
   }
 
   .text-img .content figure .after {
@@ -1831,7 +1833,7 @@ footer .bottom p {
   }
 
   .text-img-line {
-    margin-top: -20px;
+    margin-top: 0;
     padding: 48px 0 56px;
   }
 
@@ -2027,17 +2029,9 @@ footer .bottom p {
     font-size: 10px;
   }
 
-  .text-img .text {
-    margin-bottom: -32px;
-  }
-
-  .text-img .content figure {
-    padding-top: 32px;
-  }
-
   .text-img .content figure .after {
-    width: min(100px, 30vw);
-    bottom: -12px;
+    width: min(150px, 30vw);
+    bottom: -50px;
     right: 4px;
   }
 
