@@ -5,17 +5,41 @@ import Popups from '../components/site/Popups.astro';
 import ScrollReveal from '../components/site/ScrollReveal.astro';
 import { site } from '../config/site';
 import { IMAGE_WIDTHS, optimizedSrcSet, optimizedUrl } from '../lib/images';
+import asap400 from '@fontsource/asap/files/asap-latin-400-normal.woff2?url';
+import livvic600 from '@fontsource/livvic/files/livvic-latin-600-normal.woff2?url';
+import '@fontsource/asap/latin-400.css';
+import '@fontsource/asap/latin-600.css';
+import '@fontsource/asap/latin-700.css';
+import '@fontsource/livvic/latin-400.css';
+import '@fontsource/livvic/latin-600.css';
+import '@fontsource/livvic/latin-700.css';
 import '../styles/global.css';
 
-const heroPreloadMobileSizes = '100vw';
+const heroPreloadMobileSizes = 'calc(100vw - 48px)';
 const heroPreloadDesktopSizes = 'min(900px, 55vw)';
-const heroPreloadSrcSet = optimizedSrcSet(
+const heroMobileQuality = 72;
+const heroDesktopQuality = 80;
+const heroPreloadMobileSrcSet = optimizedSrcSet(
   site.heroImageUrl,
-  [...IMAGE_WIDTHS.hero],
-  82,
+  [...IMAGE_WIDTHS.heroMobile],
+  heroMobileQuality,
 );
-const heroPreloadMobileUrl = optimizedUrl(site.heroImageUrl, 480, 82);
-const heroPreloadDesktopUrl = optimizedUrl(site.heroImageUrl, 960, 82);
+const heroPreloadDesktopSrcSet = optimizedSrcSet(
+  site.heroImageUrl,
+  [...IMAGE_WIDTHS.heroDesktop],
+  heroDesktopQuality,
+);
+/** Lighthouse mobile ≈ 412×1.75 → ~720w; preload that candidate. */
+const heroPreloadMobileUrl = optimizedUrl(
+  site.heroImageUrl,
+  640,
+  heroMobileQuality,
+);
+const heroPreloadDesktopUrl = optimizedUrl(
+  site.heroImageUrl,
+  960,
+  heroDesktopQuality,
+);
 
 interface Props {
   title?: string;
@@ -66,15 +90,27 @@ const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN?.trim() || '';
 
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://anisafoundation.sirv.com" crossorigin />
-    <link rel="preconnect" href="https://cdn.pathedits.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.pathedits.com" />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={livvic600}
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href={asap400}
+      crossorigin
+    />
     <link
       rel="preload"
       as="image"
       href={heroPreloadMobileUrl}
-      imagesrcset={heroPreloadSrcSet}
+      imagesrcset={heroPreloadMobileSrcSet}
       imagesizes={heroPreloadMobileSizes}
       media="(max-width: 767px)"
       fetchpriority="high"
@@ -83,14 +119,10 @@ const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN?.trim() || '';
       rel="preload"
       as="image"
       href={heroPreloadDesktopUrl}
-      imagesrcset={heroPreloadSrcSet}
+      imagesrcset={heroPreloadDesktopSrcSet}
       imagesizes={heroPreloadDesktopSizes}
       media="(min-width: 768px)"
       fetchpriority="high"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Asap:wght@400;600;700&family=Livvic:wght@400;600;700&display=swap"
-      rel="stylesheet"
     />
     <title>{title}</title>
     <script is:inline>document.documentElement.classList.add('js');</script>

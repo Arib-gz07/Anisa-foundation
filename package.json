@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
+    "@fontsource/asap": "^5.3.0",
+    "@fontsource/livvic": "^5.3.0",
     "astro": "^7.2.3",
     "swiper": "^11.2.10"
   }

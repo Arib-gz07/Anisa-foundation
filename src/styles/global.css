@@ -380,6 +380,12 @@ html.js [data-aos][data-aos-duration='1000'] {
   padding: 30px 95px;
   flex-direction: column;
   box-sizing: border-box;
+  /* Keep initiative card copy centered (do not match WordPress left-align). */
+  text-align: center;
+}
+
+.text-img-line h3,
+.text-img-line p {
   text-align: center;
 }
 

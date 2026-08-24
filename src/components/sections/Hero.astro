@@ -3,11 +3,21 @@ import { site } from '../../config/site';
 import ArrowButton from '../site/ArrowButton.astro';
 import { IMAGE_WIDTHS, optimizedSrcSet, optimizedUrl } from '../../lib/images';
 
-const heroWidths = [...IMAGE_WIDTHS.hero];
+const heroMobileQuality = 72;
+const heroDesktopQuality = 80;
+const heroSizesMobile = 'calc(100vw - 48px)';
 const heroSizesDesktop = 'min(900px, 55vw)';
-const heroSizesMobile = '100vw';
-const heroSrcSet = optimizedSrcSet(site.heroImageUrl, heroWidths, 82);
-const heroMobileSrc = optimizedUrl(site.heroImageUrl, 480, 82);
+const heroMobileSrcSet = optimizedSrcSet(
+  site.heroImageUrl,
+  [...IMAGE_WIDTHS.heroMobile],
+  heroMobileQuality,
+);
+const heroDesktopSrcSet = optimizedSrcSet(
+  site.heroImageUrl,
+  [...IMAGE_WIDTHS.heroDesktop],
+  heroDesktopQuality,
+);
+const heroMobileSrc = optimizedUrl(site.heroImageUrl, 640, heroMobileQuality);
 ---
 
 <section class="home-banner">
@@ -24,14 +34,17 @@ const heroMobileSrc = optimizedUrl(site.heroImageUrl, 480, 82);
       <div class="hero-image">
         <picture>
           <source
+            media="(max-width: 767px)"
+            srcset={heroMobileSrcSet}
+            sizes={heroSizesMobile}
+          />
+          <source
             media="(min-width: 768px)"
-            srcset={heroSrcSet}
+            srcset={heroDesktopSrcSet}
             sizes={heroSizesDesktop}
           />
           <img
             src={heroMobileSrc}
-            srcset={heroSrcSet}
-            sizes={heroSizesMobile}
             alt="Children receiving food support from Anisa Foundation"
             width={1052}
             height={842}
