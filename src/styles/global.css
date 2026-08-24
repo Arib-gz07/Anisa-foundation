@@ -373,20 +373,19 @@ html.js [data-aos][data-aos-duration='1000'] {
   background: var(--color-card-blue);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   width: 455px;
   max-width: 100%;
   flex: 0 0 auto;
   padding: 30px 95px;
   flex-direction: column;
   box-sizing: border-box;
-  /* Keep initiative card copy centered (do not match WordPress left-align). */
-  text-align: center;
+  text-align: left;
 }
 
 .text-img-line h3,
 .text-img-line p {
-  text-align: center;
+  text-align: left;
 }
 
 .text-img-line h3 {
